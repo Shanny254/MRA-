@@ -1,4 +1,4 @@
-# KPLC Meter Risk Assessment (MRA) ETL
+# KPLC Meter Read Assessment (MRA) ETL
 
 ## Overview
 
