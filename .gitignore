@@ -1,0 +1,22 @@
+# Python Virtual Environment
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# VS Code settings
+.vscode/
+
+# Logs
+logs/
+*.log
+
+# Environment variables
+.env
+
+# Raw Excel files
+data/
+
+# Windows
+Thumbs.db
