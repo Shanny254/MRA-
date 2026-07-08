@@ -5,8 +5,8 @@ from datetime import datetime
 # Create logs folder if it doesn't exist
 os.makedirs("logs", exist_ok=True)
 
-# Log filename
-log_file = os.path.join(
+# Create log filename
+log_filename = os.path.join(
     "logs",
     f"etl_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.log"
 )
@@ -14,10 +14,11 @@ log_file = os.path.join(
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s | %(levelname)s | %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
     handlers=[
-        logging.FileHandler(log_file),
+        logging.FileHandler(log_filename, encoding="utf-8"),
         logging.StreamHandler()
     ]
 )
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("MRA_ETL")
