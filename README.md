@@ -1,4 +1,4 @@
-# KPLC Meter Risk Assessment (MRA) ETL
+# KPLC Meter Read Assessment (MRA) ETL
 
 ## Overview
 
@@ -71,7 +71,7 @@ MRA_ETL
 ### 1. Clone the repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Shanny254/MRA-.git
 cd MRA_ETL
 ```
 
