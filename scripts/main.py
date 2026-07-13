@@ -7,6 +7,7 @@ from scripts.transform import clean_dataframe
 from scripts.load import load_dataframe
 from scripts.logger import logger
 from scripts.config import EXCEL_FILE
+from scripts.validate import validate_dataframe
 
 
 def clean_table_name(sheet):
@@ -23,9 +24,9 @@ def clean_table_name(sheet):
 
 def main():
 
-  
-  # ETL START
-  
+    # ==========================================================
+    # ETL START
+    # ==========================================================
 
     start_time = time.time()
     start_datetime = datetime.now()
@@ -38,7 +39,7 @@ def main():
     logger.info("=" * 70)
     logger.info(f"Workbook          : {workbook_name}")
     logger.info(f"Database          : {database_name}")
-    logger.info(f"Started At        : {start_datetime.strftime('%Y-%m-%d %H:%M:%S')}")
+    logger.info(f"Started At        : {start_datetime:%Y-%m-%d %H:%M:%S}")
 
     sheets = get_sheet_names()
 
@@ -49,35 +50,65 @@ def main():
     successful_sheets = 0
     failed_sheets = 0
 
+    # ==========================================================
     # PROCESS EACH WORKSHEET
-    
+    # ==========================================================
+
     for index, sheet in enumerate(sheets, start=1):
 
         try:
 
             logger.info(f"[{index}/{len(sheets)}] Processing: {sheet}")
 
+            # -----------------------------
             # Extract
+            # -----------------------------
             df = read_sheet(sheet)
 
             logger.info(f"Rows Extracted    : {len(df):,}")
 
+            # -----------------------------
             # Transform
+            # -----------------------------
             df = clean_dataframe(df)
 
-            # Destination table
+            # -----------------------------
+            # Destination Table
+            # -----------------------------
             table = clean_table_name(sheet)
 
             logger.info(f"Destination Table : {table}")
 
-            # Load
-            load_dataframe(df, table)
+            # -----------------------------
+            # Validate
+            # -----------------------------
+            validation = validate_dataframe(df, table)
 
-            logger.info(f"Status            : SUCCESS")
-            logger.info("-" * 70)
+            logger.info("Validation Summary")
+            logger.info(f"Rows Checked      : {validation['rows']}")
+            logger.info(f"Warnings          : {validation['warnings']}")
+            logger.info(f"Errors            : {validation['errors']}")
+
+            if not validation["passed"]:
+
+                logger.warning(f"{sheet} failed validation. Skipping load.")
+
+                failed_sheets += 1
+
+                logger.info("-" * 70)
+
+                continue
+
+            # -----------------------------
+            # Load
+            # -----------------------------
+            load_dataframe(df, table)
 
             successful_sheets += 1
             total_rows += len(df)
+
+            logger.info("Load Status       : SUCCESS")
+            logger.info("-" * 70)
 
         except Exception:
 
@@ -87,7 +118,9 @@ def main():
 
             logger.info("-" * 70)
 
-      # ETL SUMMARY   
+    # ==========================================================
+    # ETL SUMMARY
+    # ==========================================================
 
     end_datetime = datetime.now()
     execution_time = time.time() - start_time
@@ -98,16 +131,13 @@ def main():
 
     logger.info(f"Workbook          : {workbook_name}")
     logger.info(f"Database          : {database_name}")
-
-    logger.info(f"Started At        : {start_datetime.strftime('%Y-%m-%d %H:%M:%S')}")
-    logger.info(f"Completed At      : {end_datetime.strftime('%Y-%m-%d %H:%M:%S')}")
+    logger.info(f"Started At        : {start_datetime:%Y-%m-%d %H:%M:%S}")
+    logger.info(f"Completed At      : {end_datetime:%Y-%m-%d %H:%M:%S}")
 
     logger.info(f"Total Worksheets  : {len(sheets)}")
     logger.info(f"Successful Loads  : {successful_sheets}")
     logger.info(f"Failed Loads      : {failed_sheets}")
-
     logger.info(f"Total Rows Loaded : {total_rows:,}")
-
     logger.info(f"Execution Time    : {execution_time:.2f} seconds")
 
     if failed_sheets == 0:
