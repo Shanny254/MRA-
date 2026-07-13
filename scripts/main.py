@@ -14,7 +14,6 @@ def clean_table_name(sheet):
     """
     Convert an Excel worksheet name into a SQL Server table name.
     """
-
     return (
         sheet.lower()
         .replace(" ", "_")
@@ -25,9 +24,7 @@ def clean_table_name(sheet):
 
 def main():
 
-    # ==========================================================
     # ETL START
-    # ==========================================================
 
     start_time = time.time()
     start_datetime = datetime.now()
@@ -35,9 +32,7 @@ def main():
     workbook_name = os.path.basename(EXCEL_FILE)
     database_name = "MRAs"
 
-    logger.info("=" * 70)
     logger.info("KPLC MRA ETL PIPELINE STARTED")
-    logger.info("=" * 70)
     logger.info(f"Workbook          : {workbook_name}")
     logger.info(f"Database          : {database_name}")
     logger.info(f"Started At        : {start_datetime:%Y-%m-%d %H:%M:%S}")
@@ -45,15 +40,15 @@ def main():
     sheets = get_sheet_names()
 
     logger.info(f"Worksheets Found  : {len(sheets)}")
-    logger.info("-" * 70)
 
     total_rows = 0
     successful_sheets = 0
     failed_sheets = 0
 
-    # ==========================================================
+    # Store all cleaned tables in memory
+    tables = {}
+
     # PROCESS EACH WORKSHEET
-    # ==========================================================
 
     for index, sheet in enumerate(sheets, start=1):
 
@@ -61,31 +56,23 @@ def main():
 
             logger.info(f"[{index}/{len(sheets)}] Processing: {sheet}")
 
-            # --------------------------------------------------
             # Extract
-            # --------------------------------------------------
 
             df = read_sheet(sheet)
 
             logger.info(f"Rows Extracted    : {len(df):,}")
 
-            # --------------------------------------------------
             # Transform
-            # --------------------------------------------------
 
             df = clean_dataframe(df)
 
-            # --------------------------------------------------
             # Destination Table
-            # --------------------------------------------------
 
             table = clean_table_name(sheet)
 
             logger.info(f"Destination Table : {table}")
 
-            # --------------------------------------------------
             # Validate
-            # --------------------------------------------------
 
             validation = validate_dataframe(df, table)
 
@@ -96,19 +83,19 @@ def main():
 
             if not validation["passed"]:
 
-                logger.warning(
-                    f"{sheet} failed validation. Skipping load."
-                )
+                logger.warning(f"{sheet} failed validation. Skipping load.")
 
                 failed_sheets += 1
 
-                logger.info("-" * 70)
-
                 continue
 
-            # --------------------------------------------------
+            # Store dataframe in memory
+
+            tables[table] = df
+
+            logger.info("Stored dataframe in memory.")
+
             # Load
-            # --------------------------------------------------
 
             load_dataframe(df, table)
 
@@ -116,27 +103,27 @@ def main():
             total_rows += len(df)
 
             logger.info("Load Status       : SUCCESS")
-            logger.info("-" * 70)
 
         except Exception:
 
             failed_sheets += 1
 
-            logger.exception(
-                f"FAILED TO IMPORT SHEET: {sheet}"
-            )
+            logger.exception(f"FAILED TO IMPORT SHEET: {sheet}")
 
-            logger.info("-" * 70)
+    # MEMORY SUMMARY
 
-    # ==========================================================
+    logger.info("Tables Stored In Memory")
+
+    for table_name in tables:
+        logger.info(f" - {table_name}")
+
+    logger.info(f"Total Tables      : {len(tables)}")
+
     # SAVE VALIDATION REPORT
-    # ==========================================================
 
     report_file = report.save()
 
-    logger.info("=" * 70)
     logger.info("VALIDATION REPORT")
-    logger.info("=" * 70)
 
     if report_file:
 
@@ -148,18 +135,12 @@ def main():
         logger.info("No validation issues found.")
         logger.info("Validation report was not created.")
 
-    logger.info("=" * 70)
-
-    # ==========================================================
     # ETL SUMMARY
-    # ==========================================================
 
     end_datetime = datetime.now()
     execution_time = time.time() - start_time
 
-    logger.info("=" * 70)
     logger.info("ETL SUMMARY")
-    logger.info("=" * 70)
 
     logger.info(f"Workbook          : {workbook_name}")
     logger.info(f"Database          : {database_name}")
@@ -176,8 +157,6 @@ def main():
         logger.info("ETL Status        : SUCCESS")
     else:
         logger.warning("ETL Status        : COMPLETED WITH ERRORS")
-
-    logger.info("=" * 70)
 
 
 if __name__ == "__main__":

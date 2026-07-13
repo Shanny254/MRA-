@@ -1,55 +1,6 @@
 import re
 import pandas as pd
-
-
-COLUMN_MAPPING = {
-
-    "Account Number": "account_number",
-    "ACCOUNT": "account_number",
-    "New Account No.": "account_number",
-    "Old Account No.": "old_account_number",
-
-    "Customer Name": "customer_name",
-    "Customers Name": "customer_name",
-    "Customer": "customer_name",
-    "Cliente": "customer_name",
-
-    "Staff": "staff_name",
-    "Staff No": "staff_no",
-
-    "Meters": "meter_number",
-    "Meter": "meter_number",
-    "Meter No.": "meter_number",
-
-    "Region": "region",
-    "REGION": "region",
-
-    "County": "county",
-    "COUNTY": "county",
-
-    "Sector Name": "sector_name",
-    "SECTOR_NAME": "sector_name",
-    "sector_nam": "sector_name",
-
-    "Zone Name": "zone_name",
-    "ZONE_NAME": "zone_name",
-
-    "Itin": "itinerary",
-    "Itin ": "itinerary",
-    "Itinerary": "itinerary",
-
-    "Contract Status": "contract_status",
-
-    "Tariff": "tariff",
-    "Cod Tariff": "tariff",
-    "COD_TARIFF": "tariff",
-
-    "COMM STATUS": "communication_status",
-
-    "GOOGLE_LAT": "latitude",
-    "GOOGLE_LONG": "longitude",
-}
-
+from scripts.column_mapping import COLUMN_MAPPING
 
 def standardize_column_name(column):
     """
@@ -80,3 +31,84 @@ def clean_dataframe(df: pd.DataFrame):
     df = df.loc[:, ~df.columns.duplicated()]
 
     return df
+
+
+def build_accounts_master(tables: dict):
+    """
+    Build a master Accounts table from all worksheets.
+
+    The Account Number is the authoritative primary key.
+    If multiple worksheets contain the same account,
+    information is merged into a single record.
+    """
+
+    columns_to_keep = [
+        "account_number",
+        "old_account_number",
+        "customer_name",
+        "meter_number",
+        "region",
+        "county",
+        "sector_name",
+        "zone_name",
+        "tariff",
+        "contract_status",
+    ]
+
+    account_frames = []
+
+    for table_name, df in tables.items():
+
+        if "account_number" not in df.columns:
+            continue
+
+        available_columns = [
+            column
+            for column in columns_to_keep
+            if column in df.columns
+        ]
+
+        if not available_columns:
+            continue
+
+        account_frames.append(df[available_columns].copy())
+
+    if not account_frames:
+        return pd.DataFrame(columns=columns_to_keep)
+
+    accounts = pd.concat(
+        account_frames,
+        ignore_index=True,
+        sort=False
+    )
+
+    # Remove missing account numbers
+    accounts = accounts.dropna(subset=["account_number"])
+
+    # Remove blank account numbers
+    accounts = accounts[
+        accounts["account_number"]
+        .astype(str)
+        .str
+        .strip()
+        != ""
+    ]
+
+    # Sort so records with more information appear first
+    accounts["completeness_score"] = accounts.notna().sum(axis=1)
+
+    accounts = (
+        accounts
+        .sort_values(
+            by="completeness_score",
+            ascending=False
+        )
+        .drop_duplicates(
+            subset="account_number",
+            keep="first"
+        )
+        .drop(columns="completeness_score")
+        .reset_index(drop=True)
+    )
+
+    return accounts
