@@ -7,13 +7,14 @@ from scripts.transform import clean_dataframe
 from scripts.load import load_dataframe
 from scripts.logger import logger
 from scripts.config import EXCEL_FILE
-from scripts.validate import validate_dataframe
+from scripts.validate import validate_dataframe, report
 
 
 def clean_table_name(sheet):
     """
-    Converts an Excel worksheet name into a SQL Server table name.
+    Convert an Excel worksheet name into a SQL Server table name.
     """
+
     return (
         sheet.lower()
         .replace(" ", "_")
@@ -60,38 +61,44 @@ def main():
 
             logger.info(f"[{index}/{len(sheets)}] Processing: {sheet}")
 
-            # -----------------------------
+            # --------------------------------------------------
             # Extract
-            # -----------------------------
+            # --------------------------------------------------
+
             df = read_sheet(sheet)
 
             logger.info(f"Rows Extracted    : {len(df):,}")
 
-            # -----------------------------
+            # --------------------------------------------------
             # Transform
-            # -----------------------------
+            # --------------------------------------------------
+
             df = clean_dataframe(df)
 
-            # -----------------------------
+            # --------------------------------------------------
             # Destination Table
-            # -----------------------------
+            # --------------------------------------------------
+
             table = clean_table_name(sheet)
 
             logger.info(f"Destination Table : {table}")
 
-            # -----------------------------
+            # --------------------------------------------------
             # Validate
-            # -----------------------------
+            # --------------------------------------------------
+
             validation = validate_dataframe(df, table)
 
             logger.info("Validation Summary")
-            logger.info(f"Rows Checked      : {validation['rows']}")
+            logger.info(f"Rows Checked      : {validation['rows']:,}")
             logger.info(f"Warnings          : {validation['warnings']}")
             logger.info(f"Errors            : {validation['errors']}")
 
             if not validation["passed"]:
 
-                logger.warning(f"{sheet} failed validation. Skipping load.")
+                logger.warning(
+                    f"{sheet} failed validation. Skipping load."
+                )
 
                 failed_sheets += 1
 
@@ -99,9 +106,10 @@ def main():
 
                 continue
 
-            # -----------------------------
+            # --------------------------------------------------
             # Load
-            # -----------------------------
+            # --------------------------------------------------
+
             load_dataframe(df, table)
 
             successful_sheets += 1
@@ -114,9 +122,33 @@ def main():
 
             failed_sheets += 1
 
-            logger.exception(f"FAILED TO IMPORT SHEET: {sheet}")
+            logger.exception(
+                f"FAILED TO IMPORT SHEET: {sheet}"
+            )
 
             logger.info("-" * 70)
+
+    # ==========================================================
+    # SAVE VALIDATION REPORT
+    # ==========================================================
+
+    report_file = report.save()
+
+    logger.info("=" * 70)
+    logger.info("VALIDATION REPORT")
+    logger.info("=" * 70)
+
+    if report_file:
+
+        logger.info("Validation report successfully generated.")
+        logger.info(f"Location          : {report_file}")
+
+    else:
+
+        logger.info("No validation issues found.")
+        logger.info("Validation report was not created.")
+
+    logger.info("=" * 70)
 
     # ==========================================================
     # ETL SUMMARY
