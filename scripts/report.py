@@ -6,9 +6,9 @@ import pandas as pd
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-REPORT_DIR = BASE_DIR / "reports"
+REPORT_DIR = BASE_DIR / "data" / "reports"
 
-REPORT_DIR.mkdir(exist_ok=True)
+REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
 REPORT_FILE = REPORT_DIR / "validation_report.csv"
 

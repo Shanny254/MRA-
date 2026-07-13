@@ -141,7 +141,7 @@ def main():
     if report_file:
 
         logger.info("Validation report successfully generated.")
-        logger.info(f"Location          : {report_file}")
+        logger.info(f"Validation Report : {report_file}")
 
     else:
 
