@@ -44,4 +44,33 @@ COLUMN_MAPPING = {
 
     "GOOGLE_LAT": "latitude",
     "GOOGLE_LONG": "longitude",
+
+    "BU": "business_unit",
+    "Bu": "business_unit",
+
+    "Reading Unit": "reading_unit",
+
+    "Office Name": "office_name",
+
+    "Supply Location": "supply_location",
+
+    "Period": "period",
+
+    "Bill Amount": "bill_amount",
+
+    "Reader Code": "reader_code",
+
+    "Meter Reader": "meter_reader",
+
+    "Reading Frm Mr": "reading_frm_mr",
+
+    "Prev Value": "previous_value",
+
+    "Usage Type": "usage_type",
+
+    "Ind Estimate": "estimated_reading",
+
+    "Ind Self Read": "self_read",
+
+    "Times Billed Zero": "times_billed_zero"
 }
