@@ -4,106 +4,53 @@ from datetime import datetime
 from scripts.logger import logger
 from scripts.report import ValidationReport
 
-# ==========================================================
 # Validation Report Object
-# ==========================================================
-
 report = ValidationReport()
 
 
-# ==========================================================
-# Tools Table Validation
-# ==========================================================
+# Generic Validation Functions
 
-def validate_tools(df, table_name):
+def check_duplicate_values(df, table_name, column):
 
     warnings = 0
 
-    if "STAFF_NO" in df.columns:
+    if column in df.columns:
 
-        duplicate_staff = (
-            df[df["STAFF_NO"].duplicated(keep=False)]["STAFF_NO"]
+        duplicates = (
+            df[df[column].duplicated(keep=False)][column]
             .drop_duplicates()
             .tolist()
         )
 
-        if duplicate_staff:
+        if duplicates:
 
-            logger.warning(f"Duplicate STAFF_NO values: {len(duplicate_staff)}")
+            logger.warning(f"Duplicate {column}: {len(duplicates)}")
 
             warnings += 1
 
-            for staff in duplicate_staff:
+            for value in duplicates:
+
                 report.add_issue(
                     table_name,
-                    "STAFF_NO",
+                    column,
                     "Duplicate",
-                    staff
-                )
-
-    if "STAFF_NAME" in df.columns:
-
-        missing_rows = df[df["STAFF_NAME"].isna()].index.tolist()
-
-        if missing_rows:
-
-            logger.warning(f"Missing STAFF_NAME values: {len(missing_rows)}")
-
-            warnings += 1
-
-            for row in missing_rows:
-                report.add_issue(
-                    table_name,
-                    "STAFF_NAME",
-                    "Missing Value",
-                    f"Excel Row {row + 2}"
+                    value
                 )
 
     return warnings
 
 
-# ==========================================================
-# Offline Smart Meters Validation
-# ==========================================================
-
-def validate_offline_smart_meters(df, table_name):
+def check_missing_values(df, table_name, column):
 
     warnings = 0
 
-    if "ACCOUNT" in df.columns:
+    if column in df.columns:
 
-        duplicate_accounts = (
-            df[df["ACCOUNT"].duplicated(keep=False)]["ACCOUNT"]
-            .drop_duplicates()
-            .tolist()
-        )
-
-        if duplicate_accounts:
-
-            logger.warning(
-                f"Duplicate ACCOUNT values: {len(duplicate_accounts)}"
-            )
-
-            warnings += 1
-
-            for account in duplicate_accounts:
-
-                report.add_issue(
-                    table_name,
-                    "ACCOUNT",
-                    "Duplicate",
-                    account
-                )
-
-    if "METER_NUMBER" in df.columns:
-
-        missing_rows = df[df["METER_NUMBER"].isna()].index.tolist()
+        missing_rows = df[df[column].isna()].index.tolist()
 
         if missing_rows:
 
-            logger.warning(
-                f"Missing METER_NUMBER values: {len(missing_rows)}"
-            )
+            logger.warning(f"Missing {column}: {len(missing_rows)}")
 
             warnings += 1
 
@@ -111,7 +58,7 @@ def validate_offline_smart_meters(df, table_name):
 
                 report.add_issue(
                     table_name,
-                    "METER_NUMBER",
+                    column,
                     "Missing Value",
                     f"Excel Row {row + 2}"
                 )
@@ -119,36 +66,29 @@ def validate_offline_smart_meters(df, table_name):
     return warnings
 
 
-# ==========================================================
-# Cycle Reading Validation
-# ==========================================================
-
-def validate_cycle_reading(df, table_name):
+def check_future_dates(df, table_name, column):
 
     warnings = 0
 
-    if "INSPECTION_DATE" in df.columns:
+    if column in df.columns:
 
-        dates = pd.to_datetime(
-            df["INSPECTION_DATE"],
-            errors="coerce"
-        )
+        dates = pd.to_datetime(df[column], errors="coerce")
 
         future_dates = df[dates > datetime.today()]
 
         if not future_dates.empty:
 
             logger.warning(
-                f"Future inspection dates found: {len(future_dates)}"
+                f"Future {column}: {len(future_dates)}"
             )
 
             warnings += 1
 
-            for value in future_dates["INSPECTION_DATE"]:
+            for value in future_dates[column]:
 
                 report.add_issue(
                     table_name,
-                    "INSPECTION_DATE",
+                    column,
                     "Future Date",
                     value
                 )
@@ -156,41 +96,108 @@ def validate_cycle_reading(df, table_name):
     return warnings
 
 
-# ==========================================================
-# Smart Meter Billing Validation
-# ==========================================================
-
-def validate_smart_meter_billing(df, table_name):
+def check_negative_values(df, table_name, column):
 
     warnings = 0
 
-    if "TOTAL_READING" in df.columns:
+    if column in df.columns:
 
-        negative = df[df["TOTAL_READING"] < 0]
+        negative = df[df[column] < 0]
 
         if not negative.empty:
 
             logger.warning(
-                f"Negative TOTAL_READING values: {len(negative)}"
+                f"Negative {column}: {len(negative)}"
             )
 
             warnings += 1
 
-            for value in negative["TOTAL_READING"]:
+            for value in negative[column]:
 
                 report.add_issue(
                     table_name,
-                    "TOTAL_READING",
-                    "Negative Reading",
+                    column,
+                    "Negative Value",
                     value
                 )
 
     return warnings
 
 
-# ==========================================================
+# Table Specific Validation
+
+def validate_tools(df, table_name):
+
+    warnings = 0
+
+    warnings += check_duplicate_values(
+        df,
+        table_name,
+        "staff_no"
+    )
+
+    warnings += check_missing_values(
+        df,
+        table_name,
+        "staff_name"
+    )
+
+    return warnings
+
+
+def validate_offline_smart_meters(df, table_name):
+
+    warnings = 0
+
+    warnings += check_duplicate_values(
+        df,
+        table_name,
+        "account_number"
+    )
+
+    warnings += check_missing_values(
+        df,
+        table_name,
+        "meter_number"
+    )
+
+    return warnings
+
+
+def validate_cycle_reading(df, table_name):
+
+    return check_future_dates(
+        df,
+        table_name,
+        "inspection_date"
+    )
+
+
+def validate_smart_meter_billing(df, table_name):
+
+    return check_negative_values(
+        df,
+        table_name,
+        "total_reading"
+    )
+
+
+# Table Validator Registry
+
+VALIDATORS = {
+
+    "tools": validate_tools,
+
+    "offline_smart_meters": validate_offline_smart_meters,
+
+    "offline_meters_cycle_reading": validate_cycle_reading,
+
+    "smart_meter_billing": validate_smart_meter_billing,
+
+}
+
+
 # Main Validation Function
-# ==========================================================
 
 def validate_dataframe(df: pd.DataFrame, table_name: str):
 
@@ -199,9 +206,7 @@ def validate_dataframe(df: pd.DataFrame, table_name: str):
     warnings = 0
     errors = 0
 
-    # ------------------------------------------------------
     # Generic Validation
-    # ------------------------------------------------------
 
     if df.empty:
 
@@ -235,31 +240,43 @@ def validate_dataframe(df: pd.DataFrame, table_name: str):
 
         errors += 1
 
-    # ------------------------------------------------------
+    empty_rows = df.isna().all(axis=1)
+
+    if empty_rows.any():
+
+        logger.warning(
+            f"Empty rows found: {empty_rows.sum()}"
+        )
+
+        warnings += 1
+
+        for row in df[empty_rows].index:
+
+            report.add_issue(
+                table_name,
+                "",
+                "Empty Row",
+                f"Excel Row {row + 2}"
+            )
+
     # Table Specific Validation
-    # ------------------------------------------------------
 
-    if table_name == "tools":
+    validator = VALIDATORS.get(table_name)
 
-        warnings += validate_tools(df, table_name)
+    if validator:
 
-    elif table_name == "offline_smart_meters":
-
-        warnings += validate_offline_smart_meters(df, table_name)
-
-    elif table_name == "offline_meters_cycle_reading":
-
-        warnings += validate_cycle_reading(df, table_name)
-
-    elif table_name == "smart_meter_billing":
-
-        warnings += validate_smart_meter_billing(df, table_name)
+        warnings += validator(df, table_name)
 
     logger.info("Validation completed.")
 
     return {
+
         "passed": errors == 0,
+
         "rows": len(df),
+
         "warnings": warnings,
+
         "errors": errors,
+
     }

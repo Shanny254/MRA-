@@ -18,11 +18,13 @@ CREATE TABLE postpaid_billing
 
     customer_name VARCHAR(255),
 
-    meter_number VARCHAR(20),
+    period INT,
 
     region VARCHAR(100),
 
     county VARCHAR(100),
+
+    business_unit VARCHAR(100),
 
     sector_name VARCHAR(100),
 
@@ -30,19 +32,25 @@ CREATE TABLE postpaid_billing
 
     itinerary VARCHAR(100),
 
+    customer_type VARCHAR(100),
+
     tariff VARCHAR(50),
 
-    contract_status VARCHAR(100),
+    tariff_desc VARCHAR(100),
 
-    bill_month DATE,
+    classification VARCHAR(100),
 
-    units_billed DECIMAL(18,2),
+    amount_kes DECIMAL(18,2),
 
-    amount_billed DECIMAL(18,2),
+    units_kwhrs DECIMAL(18,2),
 
-    amount_paid DECIMAL(18,2),
+    invoice_date DATE,
 
-    balance DECIMAL(18,2),
+    bill_type VARCHAR(50),
+
+    bill_status VARCHAR(50),
+
+    estimated_reading BIT,
 
     created_at DATETIME2 NOT NULL
         DEFAULT SYSDATETIME()

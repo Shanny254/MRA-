@@ -26,9 +26,34 @@ def clean_dataframe(df: pd.DataFrame):
     Clean and standardize a dataframe before loading into SQL Server.
     """
 
+    # Standardize column names
     df.columns = [standardize_column_name(column) for column in df.columns]
 
+    # Remove duplicate columns
     df = df.loc[:, ~df.columns.duplicated()]
+
+    # Strip whitespace from all text values
+    for column in df.select_dtypes(include="object").columns:
+        df[column] = df[column].astype(str).str.strip()
+
+        # Convert empty strings to None
+        df[column] = df[column].replace("", None)
+
+    # Preserve identifier columns as text
+    identifier_columns = [
+        "account_number",
+        "old_account_number",
+        "meter_number",
+        "staff_no",
+    ]
+
+    for column in identifier_columns:
+        if column in df.columns:
+            df[column] = (
+                df[column]
+                .astype("string")
+                .str.strip()
+            )
 
     return df
 
@@ -43,17 +68,18 @@ def build_accounts_master(tables: dict):
     """
 
     columns_to_keep = [
-        "account_number",
-        "old_account_number",
-        "customer_name",
-        "meter_number",
-        "region",
-        "county",
-        "sector_name",
-        "zone_name",
-        "tariff",
-        "contract_status",
-    ]
+    "account_number",
+    "old_account_number",
+    "customer_name",
+    "meter_number",
+    "region",
+    "county",
+    "sector_name",
+    "zone_name",
+    "itinerary",
+    "tariff",
+    "contract_status",
+]
 
     account_frames = []
 
