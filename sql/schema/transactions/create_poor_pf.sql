@@ -16,7 +16,13 @@ CREATE TABLE poor_pf
 
     account_number VARCHAR(20) NOT NULL,
 
+    customer_name VARCHAR(255),
+
+    meter_number VARCHAR(20),
+
     staff_no VARCHAR(20),
+
+    region VARCHAR(100),
 
     county VARCHAR(100),
 
@@ -38,7 +44,8 @@ CREATE TABLE poor_pf
 
     remarks VARCHAR(500),
 
-    created_at DATETIME2 DEFAULT SYSDATETIME()
+    created_at DATETIME2 NOT NULL
+        DEFAULT SYSDATETIME()
 );
 
 GO

@@ -16,11 +16,19 @@ CREATE TABLE load_factor
 
     account_number VARCHAR(20) NOT NULL,
 
+    customer_name VARCHAR(255),
+
+    meter_number VARCHAR(20),
+
     staff_no VARCHAR(20),
+
+    region VARCHAR(100),
 
     county VARCHAR(100),
 
     tariff VARCHAR(50),
+
+    contract_status VARCHAR(100),
 
     high_rate DECIMAL(18,2),
 
@@ -34,7 +42,8 @@ CREATE TABLE load_factor
 
     remarks VARCHAR(500),
 
-    created_at DATETIME2 DEFAULT SYSDATETIME()
+    created_at DATETIME2 NOT NULL
+        DEFAULT SYSDATETIME()
 );
 
 GO

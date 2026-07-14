@@ -3,7 +3,7 @@
 Project : MRA ETL
 Database: MRAs
 Table   : ordinary_acs_meter_rdg
-Purpose : Stores ordinary ACS meter reading records.
+Purpose : Stores ordinary ACS meter readings.
 ------------------------------------------------------------
 */
 
@@ -16,31 +16,36 @@ CREATE TABLE ordinary_acs_meter_rdg
 
     account_number VARCHAR(20) NOT NULL,
 
-    billing_period DATE,
+    customer_name VARCHAR(255),
+
+    meter_number VARCHAR(20),
+
+    region VARCHAR(100),
+
+    county VARCHAR(100),
+
+    sector_name VARCHAR(100),
+
+    zone_name VARCHAR(100),
+
+    itinerary VARCHAR(100),
 
     tariff VARCHAR(50),
 
-    billing_type VARCHAR(50),
-
-    billed_units DECIMAL(18,2),
-
-    reading_from_meter DECIMAL(18,2),
+    contract_status VARCHAR(100),
 
     previous_reading DECIMAL(18,2),
 
-    reader_code VARCHAR(50),
+    current_reading DECIMAL(18,2),
 
-    meter_reader VARCHAR(100),
+    consumption DECIMAL(18,2),
 
-    estimated_reading BIT,
+    reading_date DATE,
 
-    self_read BIT,
+    read_status VARCHAR(100),
 
-    times_billed_zero INT,
-
-    usage_type VARCHAR(100),
-
-    created_at DATETIME2 DEFAULT SYSDATETIME()
+    created_at DATETIME2 NOT NULL
+        DEFAULT SYSDATETIME()
 );
 
 GO

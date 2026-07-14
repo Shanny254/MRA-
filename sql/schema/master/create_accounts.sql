@@ -3,15 +3,8 @@
 Project : MRA ETL
 Database: MRAs
 Table   : accounts
-Purpose : Stores customer account information.
+Purpose : Stores the master customer account information.
 ------------------------------------------------------------
-
-
-Business Rule
-
-- account_number stores the current KPLC account number.
-- If an account is renumbered, the previous number is stored in old_account_number.
-
 */
 
 USE MRAs;
@@ -19,13 +12,13 @@ GO
 
 CREATE TABLE accounts
 (
-    account_number VARCHAR(20) PRIMARY KEY,
+    account_number VARCHAR(20) NOT NULL PRIMARY KEY,
 
     old_account_number VARCHAR(20),
 
-    customer_name VARCHAR(255),
+    customer_name VARCHAR(255) NOT NULL,
 
-    meter_number VARCHAR(50),
+    meter_number VARCHAR(20),
 
     region VARCHAR(100),
 
@@ -35,13 +28,13 @@ CREATE TABLE accounts
 
     zone_name VARCHAR(100),
 
-    itinerary VARCHAR(50),
+    itinerary VARCHAR(100),
 
     tariff VARCHAR(50),
 
     contract_status VARCHAR(100),
 
-    created_at DATETIME2
+    created_at DATETIME2 NOT NULL
         DEFAULT SYSDATETIME()
 );
 

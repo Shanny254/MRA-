@@ -16,15 +16,32 @@ CREATE TABLE offline_smart_meters
 
     account_number VARCHAR(20) NOT NULL,
 
-    communication_status VARCHAR(50),
+    customer_name VARCHAR(255),
+
+    meter_number VARCHAR(20),
+
+    region VARCHAR(100),
+
+    county VARCHAR(100),
+
+    zone_name VARCHAR(100),
+
+    itinerary VARCHAR(100),
+
+    communication_status VARCHAR(100),
+
     model_name VARCHAR(100),
+
     meter_phase VARCHAR(50),
+
     contract_type VARCHAR(50),
 
     latitude DECIMAL(10,8),
+
     longitude DECIMAL(11,8),
 
-    created_at DATETIME2 DEFAULT SYSDATETIME()
+    created_at DATETIME2 NOT NULL
+        DEFAULT SYSDATETIME()
 );
 
 GO

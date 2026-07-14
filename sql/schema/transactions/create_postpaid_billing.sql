@@ -3,7 +3,7 @@
 Project : MRA ETL
 Database: MRAs
 Table   : postpaid_billing
-Purpose : Stores postpaid customer billing information.
+Purpose : Stores postpaid billing information.
 ------------------------------------------------------------
 */
 
@@ -12,33 +12,40 @@ GO
 
 CREATE TABLE postpaid_billing
 (
-    billing_id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    postpaid_billing_id BIGINT IDENTITY(1,1) PRIMARY KEY,
 
     account_number VARCHAR(20) NOT NULL,
 
-    billing_period DATE,
+    customer_name VARCHAR(255),
 
-    customer_type VARCHAR(100),
+    meter_number VARCHAR(20),
+
+    region VARCHAR(100),
+
+    county VARCHAR(100),
+
+    sector_name VARCHAR(100),
+
+    zone_name VARCHAR(100),
+
+    itinerary VARCHAR(100),
 
     tariff VARCHAR(50),
 
-    tariff_description VARCHAR(100),
+    contract_status VARCHAR(100),
 
-    classification VARCHAR(100),
+    bill_month DATE,
 
-    amount_kes DECIMAL(18,2),
+    units_billed DECIMAL(18,2),
 
-    units_kwh DECIMAL(18,2),
+    amount_billed DECIMAL(18,2),
 
-    invoice_date DATE,
+    amount_paid DECIMAL(18,2),
 
-    bill_type VARCHAR(50),
+    balance DECIMAL(18,2),
 
-    bill_status VARCHAR(50),
-
-    estimated_bill BIT,
-
-    created_at DATETIME2 DEFAULT SYSDATETIME()
+    created_at DATETIME2 NOT NULL
+        DEFAULT SYSDATETIME()
 );
 
 GO

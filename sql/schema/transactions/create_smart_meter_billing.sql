@@ -3,7 +3,7 @@
 Project : MRA ETL
 Database: MRAs
 Table   : smart_meter_billing
-Purpose : Stores smart meter billing information.
+Purpose : Stores smart meter billing transactions.
 ------------------------------------------------------------
 */
 
@@ -16,15 +16,21 @@ CREATE TABLE smart_meter_billing
 
     account_number VARCHAR(20) NOT NULL,
 
+    customer_name VARCHAR(255),
+
+    meter_number VARCHAR(20),
+
     region VARCHAR(100),
 
     county VARCHAR(100),
 
-    tariff VARCHAR(50),
+    zone_name VARCHAR(100),
+
+    itinerary VARCHAR(100),
 
     feeder_id VARCHAR(50),
 
-    mfc_feeder_name VARCHAR(100),
+    mfc_feeder_name VARCHAR(150),
 
     previous_active_energy DECIMAL(18,2),
 
@@ -52,7 +58,8 @@ CREATE TABLE smart_meter_billing
 
     total_amount DECIMAL(18,2),
 
-    created_at DATETIME2 DEFAULT SYSDATETIME()
+    created_at DATETIME2 NOT NULL
+        DEFAULT SYSDATETIME()
 );
 
 GO

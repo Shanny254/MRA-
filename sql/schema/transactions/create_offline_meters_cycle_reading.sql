@@ -16,15 +16,17 @@ CREATE TABLE offline_meters_cycle_reading
 
     account_number VARCHAR(20) NOT NULL,
 
+    customer_name VARCHAR(255),
+
+    meter_number VARCHAR(20),
+
     staff_no VARCHAR(20),
 
     region VARCHAR(100),
 
     county VARCHAR(100),
 
-    tariff VARCHAR(50),
-
-    communication_status VARCHAR(50),
+    itinerary VARCHAR(100),
 
     model_name VARCHAR(100),
 
@@ -86,7 +88,8 @@ CREATE TABLE offline_meters_cycle_reading
 
     validation_status VARCHAR(100),
 
-    created_at DATETIME2 DEFAULT SYSDATETIME()
+    created_at DATETIME2 NOT NULL
+        DEFAULT SYSDATETIME()
 );
 
 GO
