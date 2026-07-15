@@ -8,4 +8,8 @@ connection_string = (
     "&TrustServerCertificate=yes"
 )
 
-engine = create_engine(connection_string)
+engine = create_engine(
+    connection_string,
+    future=True,
+    pool_pre_ping=True
+)

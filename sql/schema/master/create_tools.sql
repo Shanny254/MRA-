@@ -52,7 +52,7 @@ CREATE TABLE tools
 
     kplc_simcard BIT,
 
-    mileage DECIMAL(10,2),
+    mileage VARCHAR(100),
 
     dust_coat BIT,
 

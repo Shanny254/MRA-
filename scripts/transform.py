@@ -1,6 +1,9 @@
 import re
 import pandas as pd
+
 from scripts.column_mapping import COLUMN_MAPPING
+from scripts.table_schema import TABLE_SCHEMA
+
 
 def standardize_column_name(column):
     """
@@ -13,9 +16,7 @@ def standardize_column_name(column):
         return COLUMN_MAPPING[column]
 
     column = column.lower()
-
     column = re.sub(r"[^\w\s]", "", column)
-
     column = column.replace(" ", "_")
 
     return column
@@ -32,14 +33,17 @@ def clean_dataframe(df: pd.DataFrame):
     # Remove duplicate columns
     df = df.loc[:, ~df.columns.duplicated()]
 
-    # Strip whitespace from all text values
+    # Trim text columns
     for column in df.select_dtypes(include="object").columns:
-        df[column] = df[column].astype(str).str.strip()
 
-        # Convert empty strings to None
-        df[column] = df[column].replace("", None)
+        df[column] = (
+            df[column]
+            .astype("string")
+            .str.strip()
+            .replace("", pd.NA)
+        )
 
-    # Preserve identifier columns as text
+    # Preserve identifiers as text
     identifier_columns = [
         "account_number",
         "old_account_number",
@@ -48,7 +52,9 @@ def clean_dataframe(df: pd.DataFrame):
     ]
 
     for column in identifier_columns:
+
         if column in df.columns:
+
             df[column] = (
                 df[column]
                 .astype("string")
@@ -58,32 +64,47 @@ def clean_dataframe(df: pd.DataFrame):
     return df
 
 
+def filter_table_columns(df: pd.DataFrame, table_name: str):
+    """
+    Keep only the SQL table columns.
+    """
+
+    if table_name not in TABLE_SCHEMA:
+        return df
+
+    allowed_columns = TABLE_SCHEMA[table_name]
+
+    existing_columns = [
+        column
+        for column in allowed_columns
+        if column in df.columns
+    ]
+
+    return df[existing_columns].copy()
+
+
 def build_accounts_master(tables: dict):
     """
-    Build a master Accounts table from all worksheets.
-
-    The Account Number is the authoritative primary key.
-    If multiple worksheets contain the same account,
-    information is merged into a single record.
+    Build the Accounts master table.
     """
 
     columns_to_keep = [
-    "account_number",
-    "old_account_number",
-    "customer_name",
-    "meter_number",
-    "region",
-    "county",
-    "sector_name",
-    "zone_name",
-    "itinerary",
-    "tariff",
-    "contract_status",
-]
+        "account_number",
+        "old_account_number",
+        "customer_name",
+        "meter_number",
+        "region",
+        "county",
+        "sector_name",
+        "zone_name",
+        "itinerary",
+        "tariff",
+        "contract_status",
+    ]
 
     account_frames = []
 
-    for table_name, df in tables.items():
+    for _, df in tables.items():
 
         if "account_number" not in df.columns:
             continue
@@ -94,10 +115,8 @@ def build_accounts_master(tables: dict):
             if column in df.columns
         ]
 
-        if not available_columns:
-            continue
-
-        account_frames.append(df[available_columns].copy())
+        if available_columns:
+            account_frames.append(df[available_columns].copy())
 
     if not account_frames:
         return pd.DataFrame(columns=columns_to_keep)
@@ -108,33 +127,24 @@ def build_accounts_master(tables: dict):
         sort=False
     )
 
-    # Remove missing account numbers
     accounts = accounts.dropna(subset=["account_number"])
 
-    # Remove blank account numbers
     accounts = accounts[
-        accounts["account_number"]
-        .astype(str)
-        .str
-        .strip()
-        != ""
+        accounts["account_number"].astype(str).str.strip() != ""
     ]
 
-    # Sort so records with more information appear first
+    # Keep the most complete record for each account
     accounts["completeness_score"] = accounts.notna().sum(axis=1)
 
     accounts = (
         accounts
-        .sort_values(
-            by="completeness_score",
-            ascending=False
-        )
-        .drop_duplicates(
-            subset="account_number",
-            keep="first"
-        )
+        .sort_values("completeness_score", ascending=False)
+        .drop_duplicates("account_number", keep="first")
         .drop(columns="completeness_score")
         .reset_index(drop=True)
     )
+
+    # Match SQL column order
+    accounts = accounts.reindex(columns=columns_to_keep)
 
     return accounts
