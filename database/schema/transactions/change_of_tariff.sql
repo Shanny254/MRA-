@@ -1,13 +1,13 @@
 /*
 ------------------------------------------------------------
 Project : MRA ETL
-Database: MRAs
+Database: MRA
 Table   : change_of_tariff
-Purpose : Stores tariff change recommendations.
+Purpose : Stores customer tariff change history.
 ------------------------------------------------------------
 */
 
-USE MRAs;
+USE MRA;
 GO
 
 CREATE TABLE change_of_tariff
@@ -16,27 +16,22 @@ CREATE TABLE change_of_tariff
 
     account_number VARCHAR(20) NOT NULL,
 
-    customer_name VARCHAR(255),
+    previous_tariff VARCHAR(50),
 
-    meter_number VARCHAR(20),
+    new_tariff VARCHAR(50),
 
-    staff_no VARCHAR(20),
+    change_date DATE,
 
-    region VARCHAR(100),
+    reason_for_change VARCHAR(255),
 
-    county VARCHAR(100),
+    approved_by VARCHAR(100),
 
-    tariff VARCHAR(50),
-
-    tariff_range VARCHAR(100),
-
-    average_consumption DECIMAL(18,2),
-
-    contract_status VARCHAR(100),
-
-    remarks VARCHAR(500),
+    remarks VARCHAR(1000),
 
     created_at DATETIME2 NOT NULL
+        DEFAULT SYSDATETIME(),
+
+    updated_at DATETIME2 NOT NULL
         DEFAULT SYSDATETIME()
 );
 

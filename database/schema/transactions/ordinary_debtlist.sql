@@ -1,13 +1,13 @@
 /*
 ------------------------------------------------------------
 Project : MRA ETL
-Database: MRAs
+Database: MRA
 Table   : ordinary_debtlist
-Purpose : Stores ordinary customer debt information.
+Purpose : Stores debt information for ordinary customer accounts.
 ------------------------------------------------------------
 */
 
-USE MRAs;
+USE MRA;
 GO
 
 CREATE TABLE ordinary_debtlist
@@ -15,26 +15,6 @@ CREATE TABLE ordinary_debtlist
     debt_id BIGINT IDENTITY(1,1) PRIMARY KEY,
 
     account_number VARCHAR(20) NOT NULL,
-
-    customer_name VARCHAR(255),
-
-    meter_number VARCHAR(20),
-
-    region VARCHAR(100),
-
-    county VARCHAR(100),
-
-    sector_name VARCHAR(100),
-
-    zone_name VARCHAR(100),
-
-    office_name VARCHAR(100),
-
-    business_unit VARCHAR(100),
-
-    reading_unit VARCHAR(100),
-
-    contract_status VARCHAR(100),
 
     termination_date DATE,
 
@@ -54,15 +34,13 @@ CREATE TABLE ordinary_debtlist
 
     max_due_date DATE,
 
-    tariff VARCHAR(50),
-
     classification VARCHAR(100),
 
     deposit DECIMAL(18,2),
 
-    stima_loan_balance DECIMAL(18,2),
+    stimaloan_balance DECIMAL(18,2),
 
-    work_order_number VARCHAR(50),
+    work_order_number VARCHAR(100),
 
     work_order_type VARCHAR(100),
 
@@ -70,11 +48,10 @@ CREATE TABLE ordinary_debtlist
 
     work_order_age_days INT,
 
-    latitude DECIMAL(10,8),
-
-    longitude DECIMAL(11,8),
-
     created_at DATETIME2 NOT NULL
+        DEFAULT SYSDATETIME(),
+
+    updated_at DATETIME2 NOT NULL
         DEFAULT SYSDATETIME()
 );
 
