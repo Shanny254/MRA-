@@ -1,160 +1,98 @@
+"""
+==========================================================
+Project : MRA ETL
+File    : table_schema.py
+Purpose : Defines SQL table names and primary keys.
+==========================================================
+"""
+
 TABLE_SCHEMA = {
 
-    "accounts": [
-        "account_number",
-        "old_account_number",
-        "customer_name",
-        "meter_number",
-        "region",
-        "county",
-        "sector_name",
-        "zone_name",
-        "itinerary",
-        "tariff",
-        "contract_status",
-    ],
+    # ======================================================
+    # MASTER TABLES
+    # ======================================================
 
-    "smart_meter_billing": [
-        "account_number",
-        "feeder_id",
-        "mfc_feeder_name",
-        "previous_active_energy",
-        "previous_kva",
-        "previous_kw",
-        "previous_high_rate",
-        "previous_low_rate",
-        "read_status",
-        "current_active_energy",
-        "current_kva",
-        "current_kw",
-        "current_high_rate",
-        "current_low_rate",
-        "total_consumption",
-        "total_amount",
-    ],
+    "customer_account": {
+        "primary_key": "account_number"
+    },
 
-    "offline_smart_meters": [
-        "account_number",
-        "staff_no",
-        "meter_number",
-        "meter_type",
-        "communication_status",
-        "last_communication_time",
-        "latitude",
-        "longitude",
-    ],
+    "location": {
+        "primary_key": "location_id"
+    },
 
-    "offline_meters_cycle_reading": [
-        "account_number",
-        "staff_no",
-        "model_name",
-        "meter_phase_type",
-        "campaign_type",
-        "system_payment",
-        "inspection_status",
-        "meter_serial_number_input",
-        "total_reading",
-        "high_rate_reading",
-        "low_rate_reading",
-        "kva_reading",
-        "kw_reading",
-        "remarks",
-        "sim_serial",
-        "operation",
-        "overdue_debt",
-        "revenue_collected",
-        "payment_mode",
-        "meter_type",
-        "has_overdue_debt",
-        "tampered_meter",
-        "faulty_meter",
-        "idle_meter",
-        "bypassed_meter",
-        "kva",
-        "kwh",
-        "number_of_meters_on_site",
-        "earth_current",
-        "read_status",
-        "inspection_date",
-        "validation_status",
-    ],
+    "meter": {
+        "primary_key": "meter_number"
+    },
 
-    "ordinary_debtlist": [
-        "account_number",
-        "office_name",
-        "business_unit",
-        "reading_unit",
-        "contract_status",
-        "termination_date",
-        "customer_type",
-        "customer_category",
-        "last_monthly_bill",
-        "overdue_amount",
-        "debt",
-        "credit",
-        "total_balance",
-        "max_due_date",
-        "tariff",
-        "classification",
-        "deposit",
-        "stimaloan_balance",
-        "work_order_number",
-        "work_order_type",
-        "work_order_status",
-        "work_order_age_days",
-        "latitude",
-        "longitude",
-    ],
+    "staff": {
+        "primary_key": "staff_no"
+    },
 
-    "lp_accs": [
-        "account_number",
-        "old_account_number",
-        "customer_name",
-        "meter_number",
-        "region",
-        "county",
-        "tariff",
-        "contract_status",
-        "route_reference",
-        "recent_communication_time",
-        "communication_interval_days",
-        "communication_status",
-        "staff_assigned",
-    ],
+    # ======================================================
+    # TRANSACTION TABLES
+    # ======================================================
 
-    "postpaid_billing": [
-        "account_number",
-        "customer_name",
-        "meter_number",
-        "region",
-        "county",
-        "sector_name",
-        "zone_name",
-        "itinerary",
-        "tariff",
-        "contract_status",
-        "bill_month",
-        "units_billed",
-        "amount_billed",
-        "amount_paid",
-        "balance",
-    ],
+    "smart_meter_billing": {
+        "primary_key": "billing_id"
+    },
 
-    "ordinary_acs_meter_rdg": [
-        "account_number",
-        "customer_name",
-        "meter_number",
-        "region",
-        "county",
-        "sector_name",
-        "zone_name",
-        "itinerary",
-        "tariff",
-        "contract_status",
-        "previous_reading",
-        "current_reading",
-        "consumption",
-        "reading_date",
-        "read_status",
-    ],
+    "offline_smart_meters": {
+        "primary_key": "offline_meter_id"
+    },
+
+    "offline_meters_cycle_reading": {
+        "primary_key": "inspection_id"
+    },
+
+    "ordinary_debtlist": {
+        "primary_key": "debt_id"
+    },
+
+    "ordinary_acs_meter_rdg": {
+        "primary_key": "reading_id"
+    },
+
+    "lp_accs": {
+        "primary_key": "lp_acc_id"
+    },
+
+    "lp_debt": {
+        "primary_key": "lp_debt_id"
+    },
+
+    "admd": {
+        "primary_key": "admd_id"
+    },
+
+    "change_of_tariff": {
+        "primary_key": "tariff_change_id"
+    },
+
+    "zero_cons": {
+        "primary_key": "zero_cons_id"
+    },
+
+    "load_factor": {
+        "primary_key": "load_factor_id"
+    },
+
+    "pf_1st_time": {
+        "primary_key": "pf_1st_time_id"
+    },
+
+    "poor_pf": {
+        "primary_key": "poor_pf_id"
+    },
+
+    "cons_deviation": {
+        "primary_key": "cons_deviation_id"
+    },
+
+    "postpaid_billing": {
+        "primary_key": "billing_id"
+    },
+
+    "tools": {
+        "primary_key": "tool_assignment_id"
+    }
 }

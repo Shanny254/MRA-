@@ -7,83 +7,65 @@ from scripts.logger import logger
 
 def load_dataframe(df: pd.DataFrame, table_name: str):
     """
-    Load a DataFrame into an existing SQL Server table.
+    Load a cleaned DataFrame into an existing SQL Server table.
     """
 
     inspector = inspect(engine)
 
-    # Ensure the table already exists
     if not inspector.has_table(table_name):
-        raise Exception(
-            f"SQL table '{table_name}' does not exist. "
-            "Run the SQL scripts before running the ETL."
-        )
+        raise ValueError(f"Table '{table_name}' does not exist.")
 
-    # Get SQL table columns
-    sql_columns = [col["name"] for col in inspector.get_columns(table_name)]
+    # SQL table columns
+    sql_columns = [
+        column["name"]
+        for column in inspector.get_columns(table_name)
+    ]
 
-    # Ignore auto-generated SQL columns
-    ignored_sql_columns = {
+    # Ignore auto-generated columns
+    ignored_columns = {
         "created_at",
-        "lp_account_id"
+        "updated_at",
     }
 
     expected_columns = [
-        col for col in sql_columns
-        if col not in ignored_sql_columns
+        column
+        for column in sql_columns
+        if column not in ignored_columns
     ]
 
-    # Check for duplicate columns
-    duplicate_columns = df.columns[df.columns.duplicated()]
+    # Remove duplicate dataframe columns
+    df = df.loc[:, ~df.columns.duplicated()]
 
-    if len(duplicate_columns) > 0:
-        raise ValueError(
-            f"Duplicate DataFrame columns found: {duplicate_columns.tolist()}"
-        )
-
-    dataframe_columns = list(df.columns)
-
-    # Remove unexpected columns
-    unexpected_columns = [
-        col for col in dataframe_columns
-        if col not in expected_columns
+    # Keep only columns that exist in SQL
+    existing_columns = [
+        column
+        for column in expected_columns
+        if column in df.columns
     ]
 
-    if unexpected_columns:
-        logger.warning(
-            f"{table_name}: Removing unexpected DataFrame columns:"
-        )
+    df = df[existing_columns].copy()
 
-        for col in unexpected_columns:
-            logger.warning(f"   -> {col}")
+    # Add missing SQL columns as NULL
+    for column in expected_columns:
 
-        df = df.drop(columns=unexpected_columns)
+        if column not in df.columns:
+            df[column] = None
 
-    # Report missing SQL columns
-    missing_columns = [
-        col for col in expected_columns
-        if col not in df.columns
-    ]
+    # Match SQL column order
+    df = df[expected_columns]
 
-    if missing_columns:
-        logger.warning(
-            f"{table_name}: Missing SQL columns (NULL/default will be used):"
-        )
-
-        for col in missing_columns:
-            logger.warning(f"   -> {col}")
-
-    logger.info(f"Loading table: {table_name}")
+    logger.info(f"Loading {table_name}")
     logger.info(f"Rows: {len(df):,}")
 
     try:
-        # Remove existing data but keep the table structure
-        with engine.begin() as connection:
-            connection.execute(text(f"DELETE FROM [{table_name}]"))
 
-        # Insert new data
+        with engine.begin() as connection:
+            connection.execute(
+                text(f"DELETE FROM [{table_name}]")
+            )
+
         df.to_sql(
-            name=table_name,
+            table_name,
             con=engine,
             if_exists="append",
             index=False,
@@ -91,7 +73,7 @@ def load_dataframe(df: pd.DataFrame, table_name: str):
             method="multi"
         )
 
-        logger.info(f"{table_name} imported successfully.")
+        logger.info(f"{table_name} loaded successfully.")
 
     except Exception:
         logger.exception(f"Failed loading {table_name}")

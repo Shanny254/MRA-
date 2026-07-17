@@ -4,7 +4,7 @@ Database: MRAs
 Purpose : Creates all database constraints.
 */
 
-USE MRAs;
+USE MRA;
 GO
 
 /*==========================================================
@@ -121,6 +121,50 @@ ALTER TABLE offline_meters_cycle_reading
 ADD CONSTRAINT FK_cycle_reading_staff
 FOREIGN KEY (staff_no)
 REFERENCES staff(staff_no);
+GO
+
+/*==========================================================
+FOREIGN KEYS - METER
+==========================================================*/
+
+USE MRA;
+GO
+
+
+ALTER TABLE customer_account
+ADD CONSTRAINT FK_customer_account_meter
+FOREIGN KEY (meter_number)
+REFERENCES meter(meter_number);
+GO
+
+ALTER TABLE lp_accs
+ADD CONSTRAINT FK_lp_accs_meter
+FOREIGN KEY (meter_number)
+REFERENCES meter(meter_number);
+GO
+
+ALTER TABLE offline_smart_meters
+ADD CONSTRAINT FK_offline_smart_meter
+FOREIGN KEY (meter_number)
+REFERENCES meter(meter_number);
+GO
+
+ALTER TABLE offline_meters_cycle_reading
+ADD CONSTRAINT FK_cycle_reading_meter
+FOREIGN KEY (meter_number)
+REFERENCES meter(meter_number);
+GO
+
+ALTER TABLE ordinary_acs_meter_rdg
+ADD CONSTRAINT FK_ordinary_acs_meter
+FOREIGN KEY (meter_number)
+REFERENCES meter(meter_number);
+GO
+
+ALTER TABLE smart_meter_billing
+ADD CONSTRAINT FK_smart_meter_billing_meter
+FOREIGN KEY (meter_number)
+REFERENCES meter(meter_number);
 GO
 
 /*==========================================================
