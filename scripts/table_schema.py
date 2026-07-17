@@ -1,98 +1,416 @@
-"""
-==========================================================
-Project : MRA ETL
-File    : table_schema.py
-Purpose : Defines SQL table names and primary keys.
-==========================================================
-"""
-
 TABLE_SCHEMA = {
 
-    # ======================================================
+    # ==========================================================
     # MASTER TABLES
-    # ======================================================
+    # ==========================================================
 
-    "customer_account": {
-        "primary_key": "account_number"
-    },
+    "customer_account": [
+        "account_number",
+        "old_account_number",
+        "customer_name",
+        "meter_number",
+        "tariff",
+        "contract_status",
+        "sys_accnumber",
+        "created_at",
+        "updated_at"
+    ],
 
-    "location": {
-        "primary_key": "location_id"
-    },
+    "location": [
+        "location_id",
+        "region",
+        "county",
+        "sector_name",
+        "zone_name",
+        "itinerary",
+        "business_unit",
+        "office_name",
+        "reading_unit",
+        "supply_location",
+        "latitude",
+        "longitude",
+        "itinerary_type",
+        "feeder_id",
+        "mfc_feeder_name",
+        "created_at",
+        "updated_at"
+    ],
 
-    "meter": {
-        "primary_key": "meter_number"
-    },
+    "meter": [
+        "meter_number",
+        "meter_serial_number",
+        "meter_type",
+        "meter_phase_type",
+        "model_name",
+        "mark_name",
+        "created_at",
+        "updated_at"
+    ],
 
-    "staff": {
-        "primary_key": "staff_no"
-    },
+    "staff": [
+        "staff_no",
+        "staff_name",
+        "county",
+        "workstation",
+        "section_name",
+        "created_at",
+        "updated_at"
+    ],
 
-    # ======================================================
+    # ==========================================================
     # TRANSACTION TABLES
-    # ======================================================
+    # ==========================================================
 
-    "smart_meter_billing": {
-        "primary_key": "billing_id"
-    },
+    "smart_meter_billing": [
+        "billing_id",
+        "account_number",
+        "meter_number",
+        "previous_active_energy",
+        "current_active_energy",
+        "previous_high_rate",
+        "current_high_rate",
+        "previous_low_rate",
+        "current_low_rate",
+        "previous_kw",
+        "current_kw",
+        "previous_kva",
+        "current_kva",
+        "total_consumption",
+        "total_amount",
+        "read_status",
+        "created_at",
+        "updated_at"
+    ],
 
-    "offline_smart_meters": {
-        "primary_key": "offline_meter_id"
-    },
+    "offline_smart_meters": [
+        "offline_meter_id",
+        "account_number",
+        "staff_no",
+        "meter_number",
+        "meter_type",
+        "communication_status",
+        "last_communication_time",
+        "latitude",
+        "longitude",
+        "contract_type",
+        "itin_type",
+        "created_at"
+    ],
 
-    "offline_meters_cycle_reading": {
-        "primary_key": "inspection_id"
-    },
+    "offline_meters_cycle_reading": [
+        "inspection_id",
+        "account_number",
+        "meter_number",
+        "staff_no",
+        "inspection_date",
+        "campaign_type",
+        "inspection_status",
+        "validation_status",
+        "operation",
+        "meter_serial_number_input",
+        "meter_phase_type",
+        "model_name",
+        "mark_name",
+        "meter_type",
+        "system_payment",
+        "payment_mode",
+        "total_reading",
+        "high_rate_reading",
+        "low_rate_reading",
+        "kva_reading",
+        "kw_reading",
+        "kva",
+        "kwh",
+        "earth_current",
+        "number_of_meters_on_site",
+        "overdue_debt",
+        "revenue_collected",
+        "has_overdue_debt",
+        "tampered_meter",
+        "faulty_meter",
+        "idle_meter",
+        "bypassed_meter",
+        "read_status",
+        "remarks",
+        "sim_serial",
+        "system_region",
+        "system_county",
+        "sys_mtrnumber",
+        "sys_accnumber",
+        "globalid",
+        "created_user",
+        "created_date",
+        "last_edited_user",
+        "last_edited_date",
+        "created_at",
+        "updated_at"
+    ],
 
-    "ordinary_debtlist": {
-        "primary_key": "debt_id"
-    },
+    "ordinary_debtlist": [
+        "debt_id",
+        "account_number",
+        "termination_date",
+        "customer_type",
+        "customer_category",
+        "last_monthly_bill",
+        "overdue_amount",
+        "debt",
+        "credit",
+        "total_balance",
+        "max_due_date",
+        "classification",
+        "deposit",
+        "stimaloan_balance",
+        "work_order_number",
+        "work_order_type",
+        "work_order_status",
+        "work_order_age_days",
+        "cod_tariff",
+        "x_coordinate",
+        "y_coordinate",
+        "created_at",
+        "updated_at"
+    ],
 
-    "ordinary_acs_meter_rdg": {
-        "primary_key": "reading_id"
-    },
+    "ordinary_acs_meter_rdg": [
+        "reading_id",
+        "account_number",
+        "meter_number",
+        "previous_reading",
+        "current_reading",
+        "consumption",
+        "reading_date",
+        "read_status",
+        "reader_code",
+        "meter_reader",
+        "reading_from_meter",
+        "previous_value",
+        "estimated_reading",
+        "self_read",
+        "usage_type",
+        "period",
+        "cod_tariff",
+        "billing_type",
+        "billed_units",
+        "times_billed_zero",
+        "created_at",
+        "updated_at"
+    ],
 
-    "lp_accs": {
-        "primary_key": "lp_acc_id"
-    },
+    "lp_accs": [
+        "lp_acc_id",
+        "account_number",
+        "meter_number",
+        "route_reference",
+        "communication_status",
+        "recent_communication_time",
+        "communication_interval_days",
+        "staff_assigned",
+        "created_at",
+        "updated_at"
+    ],
+        "lp_debt": [
+        "lp_debt_id",
+        "account_number",
+        "bill_month",
+        "overdue_amount",
+        "current_balance",
+        "debt_amount",
+        "credit_amount",
+        "total_balance",
+        "last_payment_date",
+        "last_payment_amount",
+        "debt_age_days",
+        "legacy_number",
+        "vat",
+        "admd",
+        "avg_6_month_bill",
+        "deposit_amount",
+        "guarantee_amount",
+        "created_at",
+        "updated_at"
+    ],
 
-    "lp_debt": {
-        "primary_key": "lp_debt_id"
-    },
+    "admd": [
+        "admd_id",
+        "account_number",
+        "inspection_date",
+        "current_admd",
+        "previous_admd",
+        "admd_variance",
+        "admd_status",
+        "remarks",
+        "niss",
+        "kva_demand",
+        "kva_contract",
+        "difference",
+        "created_at",
+        "updated_at"
+    ],
 
-    "admd": {
-        "primary_key": "admd_id"
-    },
+    "change_of_tariff": [
+        "tariff_change_id",
+        "account_number",
+        "previous_tariff",
+        "new_tariff",
+        "change_date",
+        "reason_for_change",
+        "approved_by",
+        "remarks",
+        "niss",
+        "avg_consumption",
+        "tariff_range",
+        "created_at",
+        "updated_at"
+    ],
 
-    "change_of_tariff": {
-        "primary_key": "tariff_change_id"
-    },
+    "zero_cons": [
+        "zero_cons_id",
+        "account_number",
+        "billing_period",
+        "consecutive_zero_months",
+        "average_previous_consumption",
+        "current_consumption",
+        "suspected_reason",
+        "investigation_status",
+        "remarks",
+        "niss",
+        "total_amount",
+        "invoice_date",
+        "created_at",
+        "updated_at"
+    ],
 
-    "zero_cons": {
-        "primary_key": "zero_cons_id"
-    },
+    "load_factor": [
+        "load_factor_id",
+        "account_number",
+        "analysis_period",
+        "maximum_demand",
+        "average_load",
+        "load_factor",
+        "utilization_percentage",
+        "analysis_status",
+        "remarks",
+        "niss",
+        "high_rate",
+        "low_rate",
+        "kva_demand",
+        "kw_demand",
+        "created_at",
+        "updated_at"
+    ],
 
-    "load_factor": {
-        "primary_key": "load_factor_id"
-    },
+    "pf_1st_time": [
+        "pf_1st_time_id",
+        "account_number",
+        "inspection_date",
+        "current_power_factor",
+        "target_power_factor",
+        "reactive_power",
+        "apparent_power",
+        "pf_status",
+        "recommendation",
+        "remarks",
+        "kva_units",
+        "kw_units",
+        "hr_units",
+        "lr_units",
+        "pf_amount",
+        "created_at",
+        "updated_at"
+    ],
 
-    "pf_1st_time": {
-        "primary_key": "pf_1st_time_id"
-    },
+    "poor_pf": [
+        "poor_pf_id",
+        "account_number",
+        "inspection_date",
+        "power_factor",
+        "reactive_power",
+        "apparent_power",
+        "active_power",
+        "power_loss",
+        "penalty_amount",
+        "correction_required",
+        "correction_status",
+        "recommendation",
+        "remarks",
+        "niss",
+        "bill_amount",
+        "kva_demand",
+        "kw_demand",
+        "high_rate",
+        "low_rate",
+        "pf_surcharge",
+        "created_at",
+        "updated_at"
+    ],
 
-    "poor_pf": {
-        "primary_key": "poor_pf_id"
-    },
+    "cons_deviation": [
+        "cons_deviation_id",
+        "account_number",
+        "analysis_period",
+        "previous_consumption",
+        "current_consumption",
+        "consumption_difference",
+        "percentage_change",
+        "deviation_status",
+        "remarks",
+        "avg_consumption",
+        "current_cycle",
+        "previous_cycle",
+        "percentage_difference",
+        "id_payment_form",
+        "niss",
+        "created_at",
+        "updated_at"
+    ],
 
-    "cons_deviation": {
-        "primary_key": "cons_deviation_id"
-    },
+    "postpaid_billing": [
+        "billing_id",
+        "account_number",
+        "bill_month",
+        "units_billed",
+        "amount_billed",
+        "amount_paid",
+        "balance",
+        "tariff",
+        "contract_status",
+        "period",
+        "tariff_desc",
+        "classification",
+        "invoice_date",
+        "bill_type",
+        "bill_status",
+        "ind_estimated",
+        "created_at",
+        "updated_at"
+    ],
 
-    "postpaid_billing": {
-        "primary_key": "billing_id"
-    },
+    "tools": [
+        "tool_assignment_id",
+        "staff_no",
+        "clamp_meter",
+        "digital_multimeter",
+        "phase_sequence",
+        "screw_driver_set",
+        "allen_keys_set",
+        "adjustable_spanner",
+        "voltage_tester",
+        "non_contact_voltage_tester",
+        "hacksaw",
+        "retractable_knife",
+        "pliers_set",
+        "loop_impedance_tester",
+        "cordless_drill",
+        "handheld_terminal",
+        "kplc_simcard",
+        "mileage",
+        "dust_coat",
+        "safety_boot",
+        "helmet",
+        "electrical_gloves",
+        "created_at",
+        "updated_at"
+    ]
 
-    "tools": {
-        "primary_key": "tool_assignment_id"
-    }
 }
